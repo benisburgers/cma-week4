@@ -96,3 +96,10 @@ ggplot() +
   guides(fill = "legend") +
   ylim(c(1204500, 1205500)) +
   xlim(c(2570000, 2571000))
+
+# Task 6 (optional): Visualize data as timecube with plotly
+
+library(plotly)
+
+plot_ly(wildschwein_filtered, x = ~E, y = ~N, z = ~DatetimeUTC, mode = 'lines',
+               opacity = 1, line = list(width = 6, color = ~TierName))

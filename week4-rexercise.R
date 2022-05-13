@@ -48,6 +48,37 @@ max(wildschwein_filtered$DatetimeUTC)
 # Task 3: Create Join Key
 
 ### Round DatetimeUTC to the nearest 15 minutes interval (remove the random delay of a few seconds)
-wildschwein_filtered %>%
+wildschwein_filtered <- wildschwein_filtered %>%
   mutate(DatetimeRounded = round_date(DatetimeUTC, "15 mins"))
 
+# Task 4: Measuring distance at concurrent locations
+
+## 1. Split the wildschwein_filter object into one data.frame per animal
+
+ws_rosa <- wildschwein_filtered %>%
+  filter(TierName == "Rosa")
+
+ws_sabi <- wildschwein_filtered %>%
+  filter(TierName == "Sabi")
+
+## 2. Join* these datasets by the new Datetime column created in the last task. The joined observations are temporally close.
+
+ws_individuals_joined <- ws_rosa %>%
+  inner_join(ws_sabi, by = "DatetimeRounded", suffix = c(".rosa", ".sabi"))
+ws_individuals_joined
+
+## 3. In the joined dataset, calculate Euclidean distances between concurrent observations and store the values in a new column
+
+ws_individuals_joined <- ws_individuals_joined %>%
+  rowwise() %>%
+  mutate(
+    distance = calc_dist(c(E.rosa, N.rosa), c(E.sabi, N.sabi))
+  )
+ws_individuals_joined
+
+## 4. Use a reasonable threshold on distance to determine if the animals are also spatially close enough to constitute a meet (we use 100 meters). Store this Boolean information (TRUE/FALSE) in a new column
+
+ws_individuals_joined <- ws_individuals_joined %>%
+  mutate(
+    meet = ifelse(distance < 100, TRUE, FALSE)
+  )

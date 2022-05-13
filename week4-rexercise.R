@@ -82,3 +82,17 @@ ws_individuals_joined <- ws_individuals_joined %>%
   mutate(
     meet = ifelse(distance < 100, TRUE, FALSE)
   )
+
+# Task 5: Visualize data
+
+ws_individuals_joined_meet <- ws_individuals_joined %>% filter(
+  meet
+)
+
+ggplot() +
+  geom_point(data = wildschwein_filtered, mapping = aes(x = E, y = N, color = TierName)) +
+  geom_point(data = ws_individuals_joined_meet, mapping = aes(x = E.rosa, y = N.rosa, fill = "Rosa"), color = "black", shape = 1) +
+  geom_point(data = ws_individuals_joined_meet, mapping = aes(x = E.sabi, y = N.sabi, fill = "Sabi"), color = "black", shape = 1) +
+  guides(fill = "legend") +
+  ylim(c(1204500, 1205500)) +
+  xlim(c(2570000, 2571000))

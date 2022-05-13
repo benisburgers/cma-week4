@@ -26,18 +26,28 @@ wildschwein
 
 ## Filter Data
 
-### Check how many individuals & the date range
+### Check how many individuals & the date range before filtering
 
 unique(wildschwein$TierName)
 min(wildschwein$DatetimeUTC)
 max(wildschwein$DatetimeUTC)
 
 ### Filter by name & date
+### (Define the timezone of the threshold time, otherwise R uses system time)
 
 wildschwein_filtered <- wildschwein %>%
   filter(TierName == "Rosa" | TierName == "Sabi") %>%
-  filter(DatetimeUTC >= "2015-04-01" & DatetimeUTC <= "2015-04-15")
+  filter(DatetimeUTC >= as.POSIXct("2015-04-01", tz = "UTC") & DatetimeUTC <= as.POSIXct("2015-04-15", tz = "UTC"))
+
+### Check how many individuals & the date range after filtering
 
 unique(wildschwein_filtered$TierName)
 min(wildschwein_filtered$DatetimeUTC)
 max(wildschwein_filtered$DatetimeUTC)
+
+# Task 3: Create Join Key
+
+### Round DatetimeUTC to the nearest 15 minutes interval (remove the random delay of a few seconds)
+wildschwein_filtered %>%
+  mutate(DatetimeRounded = round_date(DatetimeUTC, "15 mins"))
+
